@@ -1,6 +1,6 @@
 name: ToolBreakWarningPlugin
 version: 1.0.0
 main: aquarius0715.toolbreakwarningplugin.ToolBreakWarningPlugin
-api-version: 1.15.2
+api-version: 1.13
 commands:
   tbw:
