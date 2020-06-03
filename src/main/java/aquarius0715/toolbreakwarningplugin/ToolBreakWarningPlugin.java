@@ -110,7 +110,7 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
                 player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0F, 8.0F);
 
-                player.sendTitle(ChatColor.DARK_RED + "" + ChatColor.BOLD + "注意！", ChatColor.RED + "" + ChatColor.BOLD + "装備が壊れます。早急に修繕または使用をやめてください", 1, 20, 1);
+                player.sendTitle(ChatColor.DARK_RED + "" + ChatColor.BOLD + "注意！", ChatColor.RED + "" + ChatColor.BOLD + "装備が壊れます。修繕するか使用をやめてください", 1, 20, 1);
             }
         }
     }
