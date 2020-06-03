@@ -15,17 +15,19 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 
 public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener {
 
     Map<UUID, Boolean> settings = new HashMap<UUID, Boolean>();
+    String prefix = ChatColor.BOLD + "[" + ChatColor.GREEN + "ToolBreakWarning" + ChatColor.WHITE + "" + ChatColor.BOLD + "]";
 
     @Override
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(this, this);
-        getCommand("tbw").setExecutor(this);
+        Objects.requireNonNull(getCommand("tbw")).setExecutor(this);
         // Plugin startup logic
     }
 
@@ -43,14 +45,14 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
                 return true;
             }
             if (args.length == 0) {
-                sender.sendMessage("===============ToolBreakWarningPlugin===============");
-                sender.sendMessage("このプラグインはツールの耐久値があといくつなのか、");
-                sender.sendMessage("壊れそうになると音で知らせてくれるプラグインです。");
-                sender.sendMessage("デフォルトではonになっています。");
-                sender.sendMessage("</tbw>: この説明画面を開きます。");
-                sender.sendMessage("</tbw on>: このプラグインを使用します。");
-                sender.sendMessage("</tbw off>: このプラグインの使用をやめます。");
-                sender.sendMessage("===============ToolBreakWarningPlugin===============");
+                sender.sendMessage(prefix + "===============ToolBreakWarningPlugin===============");
+                sender.sendMessage(prefix + "このプラグインはツールの耐久値があといくつなのか、");
+                sender.sendMessage(prefix + "壊れそうになると音で知らせてくれるプラグインです。");
+                sender.sendMessage(prefix + "デフォルトではonになっています。");
+                sender.sendMessage(prefix + "</tbw>: この説明画面を開きます。");
+                sender.sendMessage(prefix + "</tbw on>: このプラグインを使用します。");
+                sender.sendMessage(prefix + "</tbw off>: このプラグインの使用をやめます。");
+                sender.sendMessage(prefix + "===============ToolBreakWarningPlugin===============");
             }
 
             if (args.length == 1) {
@@ -58,19 +60,19 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
 
                 if (args[0].equalsIgnoreCase("on")) {
                     settings.put(player.getUniqueId(), true);
-                    player.sendMessage("通知機能をオンにしました。");
+                    player.sendMessage(prefix + ChatColor.GREEN + "" + ChatColor.BOLD + "通知機能をオンにしました。");
                 } else if (args[0].equalsIgnoreCase("off")) {
                     settings.put(player.getUniqueId(), false);
-                    player.sendMessage("通知機能をオフにしました。");
+                    player.sendMessage(prefix + ChatColor.RED + "" + ChatColor.BOLD + "通知機能をオフにしました。");
                 } else {
-                    sender.sendMessage("===============ToolBreakWarningPlugin===============");
-                    sender.sendMessage("このプラグインはツールの耐久値があといくつなのか、");
-                    sender.sendMessage("壊れそうになると音で知らせてくれるプラグインです。");
-                    sender.sendMessage("デフォルトではonになっています。");
-                    sender.sendMessage("</tbw>: この説明画面を開きます。");
-                    sender.sendMessage("</tbw on>: このプラグインを使用します。");
-                    sender.sendMessage("</tbw off>: このプラグインの使用をやめます。");
-                    sender.sendMessage("===============ToolBreakWarningPlugin===============");
+                    sender.sendMessage(prefix + "===============ToolBreakWarningPlugin===============");
+                    sender.sendMessage(prefix + "このプラグインはツールの耐久値があといくつなのか、");
+                    sender.sendMessage(prefix + "壊れそうになると音で知らせてくれるプラグインです。");
+                    sender.sendMessage(prefix + "デフォルトではonになっています。");
+                    sender.sendMessage(prefix + "</tbw>: この説明画面を開きます。");
+                    sender.sendMessage(prefix + "</tbw on>: このプラグインを使用します。");
+                    sender.sendMessage(prefix + "</tbw off>: このプラグインの使用をやめます。");
+                    sender.sendMessage(prefix + "===============ToolBreakWarningPlugin===============");
                 }
             }
         }
