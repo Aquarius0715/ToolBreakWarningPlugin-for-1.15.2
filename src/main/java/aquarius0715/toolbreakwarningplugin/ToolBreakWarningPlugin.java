@@ -45,7 +45,7 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
             if (args.length == 0) {
                 sender.sendMessage("===============ToolBreakWarningPlugin===============");
                 sender.sendMessage("このプラグインはツールの耐久値があといくつなのか、");
-                sender.sendMessage("そして壊れそうになると音で知らせてくれるプラグインです。");
+                sender.sendMessage("壊れそうになると音で知らせてくれるプラグインです。");
                 sender.sendMessage("デフォルトではonになっています。");
                 sender.sendMessage("</tbw>: この説明画面を開きます。");
                 sender.sendMessage("</tbw on>: このプラグインを使用します。");
@@ -65,7 +65,7 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
                 } else {
                     sender.sendMessage("===============ToolBreakWarningPlugin===============");
                     sender.sendMessage("このプラグインはツールの耐久値があといくつなのか、");
-                    sender.sendMessage("そして壊れそうになると音で知らせてくれるプラグインです。");
+                    sender.sendMessage("壊れそうになると音で知らせてくれるプラグインです。");
                     sender.sendMessage("デフォルトではonになっています。");
                     sender.sendMessage("</tbw>: この説明画面を開きます。");
                     sender.sendMessage("</tbw on>: このプラグインを使用します。");
@@ -81,8 +81,8 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerItemDamageEvent(PlayerItemDamageEvent event) {
         Player player = event.getPlayer();
-        int maxDurability = player.getItemInHand().getType().getMaxDurability();
-        int nowDurability = player.getItemInHand().getType().getMaxDurability() - player.getItemInHand().getDurability();
+        int maxDurability = event.getItem().getType().getMaxDurability();
+        int nowDurability = (event.getItem().getType().getMaxDurability() - event.getItem().getDurability()) - 1;
 
         boolean contains = settings.containsKey(player.getUniqueId());
         if (!contains) {
@@ -90,29 +90,24 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
         }
         if (settings.get(player.getUniqueId()).equals(true)) {
 
-            if (nowDurability <= maxDurability * 0.3 && nowDurability >= maxDurability * 0.1) {
-                String message = ChatColor.GRAY + "" + ChatColor.BOLD + "(ツール名: " + player.getItemInHand().getType() +
+            if (nowDurability <= maxDurability * 0.2 && nowDurability >= maxDurability * 0.05) {
+                String message = ChatColor.GRAY + "" + ChatColor.BOLD + "(ツール名: " + event.getItem().getType() +
                         " / 最大耐久値: " + maxDurability +
                         " /" + ChatColor.YELLOW + "" + ChatColor.BOLD + "現在の耐久値: " + nowDurability + ChatColor.GRAY + ChatColor.BOLD + ")";
                 TextComponent component = new TextComponent();
                 component.setText(message);
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
-            } else if (nowDurability <= maxDurability * 0.1) {
-                String message = ChatColor.GRAY + "" + ChatColor.BOLD + "(ツール名: " + player.getItemInHand().getType() +
+
+            } else if (nowDurability <= maxDurability * 0.05) {
+                String message = ChatColor.GRAY + "" + ChatColor.BOLD + "(ツール名: " + event.getItem().getType() +
                         " / 最大耐久値: " + maxDurability +
                         " /" + ChatColor.DARK_RED + "" + ChatColor.BOLD + "現在の耐久値: " + nowDurability + ChatColor.GRAY + ChatColor.BOLD + ")";
                 TextComponent component = new TextComponent();
                 component.setText(message);
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
                 player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0F, 8.0F);
-            } else {
 
-                String message = ChatColor.GRAY + "" + ChatColor.BOLD + "(ツール名: " + player.getItemInHand().getType() +
-                        " / 最大耐久値: " + maxDurability +
-                        " /" + ChatColor.AQUA + "" + ChatColor.BOLD + "現在の耐久値: " + nowDurability + ChatColor.GRAY + ChatColor.BOLD + ")";
-                TextComponent component = new TextComponent();
-                component.setText(message);
-                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
+                player.sendTitle(ChatColor.DARK_RED + "" + ChatColor.BOLD + "注意！", ChatColor.RED + "" + ChatColor.BOLD + "装備が壊れます。早急に修繕または使用をやめてください", 1, 20, 1);
             }
         }
     }
