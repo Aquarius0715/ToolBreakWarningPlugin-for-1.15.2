@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemDamageEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import java.util.UUID;
 public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener {
 
     Map<UUID, Boolean> settings = new HashMap<UUID, Boolean>();
-    String prefix = ChatColor.BOLD + "[" + ChatColor.GREEN + "ToolBreakWarning" + ChatColor.WHITE + "" + ChatColor.BOLD + "]";
+    String prefix = ChatColor.BOLD + "[" + ChatColor.GREEN + "ToolBreakWarning" + ChatColor.WHITE + "" + ChatColor.BOLD + "] ";
 
     @Override
     public void onEnable() {
@@ -80,7 +81,7 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
     }
 
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerItemDamageEvent(PlayerItemDamageEvent event) {
         Player player = event.getPlayer();
         int maxDurability = event.getItem().getType().getMaxDurability();
@@ -112,5 +113,13 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
                 player.sendTitle(ChatColor.DARK_RED + "" + ChatColor.BOLD + "注意！", ChatColor.RED + "" + ChatColor.BOLD + "装備が壊れます。早急に修繕または使用をやめてください", 1, 20, 1);
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerJoinEvent(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+
+        player.sendMessage(prefix + "ToolBreakWarning は有効化されています。詳細は「/tbw」と入力して確認して下さい。");
+
     }
 }
