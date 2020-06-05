@@ -27,6 +27,7 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
     Map<UUID, Boolean> stopper_stats = new HashMap<UUID, Boolean>();
     String prefix = ChatColor.BOLD + "[" + ChatColor.GREEN + "ToolBreakWarning" + ChatColor.WHITE + "" + ChatColor.BOLD + "] ";
     boolean plugin_stats = false;
+    boolean toggle = true;
 
     @Override
     public void onEnable() {
@@ -61,8 +62,11 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
                 sender.sendMessage(prefix + "</tb stopper>: ストッパー機能の有効・無効を指定します。");
                 sender.sendMessage(prefix + "</tbw on>: このプラグインを使用します。");
                 sender.sendMessage(prefix + "</tbw off>: このプラグインの使用をやめます。");
-                sender.sendMessage(prefix + "</tbw enable>: このプラグインを有効化にします。");
-                sender.sendMessage(prefix + "</tbw disable>: このプラグインを無効化します。");
+                if (sender.hasPermission("admin")) {
+                    sender.sendMessage(prefix + "</tbw enable>: このプラグインを有効化にします。");
+                    sender.sendMessage(prefix + "</tbw disable>: このプラグインを無効化します。");
+                    sender.sendMessage(prefix + "</tbw reload>: プラグインをリロードします。 ");
+                }
                 sender.sendMessage(prefix + "===============ToolBreakWarningPlugin===============");
             }
 
@@ -76,6 +80,7 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
                     }
                     settings.put(player.getUniqueId(), true);
                     player.sendMessage(prefix + ChatColor.GREEN + "" + ChatColor.BOLD + "通知機能をオンにしました。");
+                    return true;
                 }
                 if (args[0].equalsIgnoreCase("off")) {
                     if (!plugin_stats) {
@@ -96,8 +101,8 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
                     } else {
                         onDisable();
                         sender.sendMessage(prefix + "プラグインを無効にしました。");
-                        return true;
                     }
+                    return true;
                 }
                 if (args[0].equalsIgnoreCase("enable")) {
                     if (plugin_stats && !player.hasPermission("admin")) {
@@ -106,7 +111,7 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
                     }
                     if (plugin_stats) {
                         sender.sendMessage(prefix + "プラグインはすでに有効にされています。");
-                        return false;
+                        return true;
                     }
                 }
                 if (!plugin_stats) {
@@ -114,18 +119,29 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
                     sender.sendMessage(prefix + "プラグインを有効にしました。");
                     return true;
                 }
-                if (args[0].equalsIgnoreCase("stopper")) {
-                    if (!stopper_stats.containsKey(player.getUniqueId())) {
-                        stopper_stats.put(((Player) sender).getUniqueId(), true);
-                        sender.sendMessage(prefix + "ストッパー機能をオンにしました。");
-                        return true;
-                    }
 
-                    if (stopper_stats.containsKey(player.getUniqueId())) {
-                        stopper_stats.put(((Player) sender).getUniqueId(), false);
+                if (args[0].equalsIgnoreCase("stopper")) {
+                    if (this.stopper_stats.containsValue(true)) {
                         sender.sendMessage(prefix + "ストッパー機能をオフにしました。");
-                        return true;
+                        this.stopper_stats.put(((Player) sender).getUniqueId(), false);
+                    } else {
+                        sender.sendMessage(prefix + "ストッパー機能をオンにしました。");
+                        this.stopper_stats.put(((Player) sender).getUniqueId(), true);
                     }
+                    return true;
+                }
+
+                if (args[0].equalsIgnoreCase("reload")) {
+                    if (!sender.hasPermission("admin")) {
+                        sender.sendMessage(prefix + "あなたはこのコマンドを使うことができません。");
+                        return false;
+                    } else {
+                        onDisable();
+                        onEnable();
+                        reloadConfig();
+                        sender.sendMessage(prefix + "リロードしました。");
+                    }
+                    return true;
                 }
             }
             return false;
@@ -134,20 +150,17 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
     }
 
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerItemDamageEvent(PlayerItemDamageEvent event) {
         Player player = event.getPlayer();
         int maxDurability = event.getItem().getType().getMaxDurability();
         int nowDurability = (event.getItem().getType().getMaxDurability() - event.getItem().getDurability()) - 1;
 
-        boolean contains = settings.containsKey(player.getUniqueId());
         if (!plugin_stats) {
             event.isCancelled();
             return;
         }
-        if (!contains) {
-            settings.put(player.getUniqueId(), true);
-        }
+
         if (settings.get(player.getUniqueId()).equals(true)) {
 
             if (nowDurability <= maxDurability * 0.2 && nowDurability >= maxDurability * 0.05) {
@@ -181,6 +194,7 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
             return;
         }
 
+
         if (stopper_stats.get(player.getUniqueId()).equals(true)) {
             int nowDurability = (player.getItemInHand().getType().getMaxDurability() - player.getItemInHand().getDurability()) - 1;
             String message = ChatColor.RED + "" + ChatColor.BOLD + "ストッパーが作動しました！！！";
@@ -200,5 +214,7 @@ public final class ToolBreakWarningPlugin extends JavaPlugin implements Listener
         if (plugin_stats) {
             player.sendMessage(prefix + "ToolBreakWarning は有効化されています。詳細は「/tbw」と入力して確認して下さい。");
         }
+        settings.putIfAbsent(player.getUniqueId(), true);
+        stopper_stats.putIfAbsent(player.getUniqueId(), true);
     }
 }
