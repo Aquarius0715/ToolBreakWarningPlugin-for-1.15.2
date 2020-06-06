@@ -3,7 +3,7 @@ package aquarius0715.toolbreakwarningplugin;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -11,6 +11,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.Objects;
 
 public class Event implements Listener {
 
@@ -48,7 +52,18 @@ public class Event implements Listener {
                 TextComponent component = new TextComponent();
                 component.setText(message);
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, component);
-                player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT_PLAYER, 1.0F, 8.0F);
+                plugin.SoundData.SoundData(event.getPlayer());
+
+                if (nowDurability == 0) {
+                    if (player.getInventory().contains(player.getItemInHand().getType())) {
+                        ItemStack itemStack = new ItemStack(Objects.requireNonNull(Material.getMaterial(player.getItemInHand().getType().toString())));
+                        itemStack.addEnchantments(player.getItemInHand().getEnchantments());
+                        itemStack.setItemMeta(player.getItemInHand().getItemMeta());
+
+
+                    }
+                }
+
             }
         }
     }
@@ -86,5 +101,12 @@ public class Event implements Listener {
         }
         plugin.settings.putIfAbsent(player.getUniqueId(), true);
         plugin.stopper_stats.putIfAbsent(player.getUniqueId(), true);
+        plugin.ScoreBoard.createScoreBoard(event.getPlayer());
+
+    }
+
+    @EventHandler
+    public void onPlayerQuietEvent(PlayerQuitEvent event) {
+
     }
 }
